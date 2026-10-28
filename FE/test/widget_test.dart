@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_app_demo/l10n/app_strings.dart';
 import 'package:mobile_app_demo/models/alarm.dart';
 import 'package:mobile_app_demo/screens/login_screen.dart';
+import 'package:mobile_app_demo/services/api_client.dart';
 import 'package:mobile_app_demo/theme/app_theme.dart';
 
 void main() {
@@ -56,5 +57,9 @@ void main() {
       en.ringsIn(const Duration(seconds: 20)),
       'Rings in less than a minute',
     );
+  });
+
+  test('API calls target the versioned backend routes', () {
+    expect(ApiClient.apiPrefix, '/api/v1');
   });
 }
