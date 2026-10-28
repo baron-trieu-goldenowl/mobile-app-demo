@@ -64,8 +64,11 @@ upper case, lower case and a digit).
   `env/dev.json`:
   - `GOOGLE_SERVER_CLIENT_ID`: the *Web application* client (the backend
     uses the same client).
-  - `GOOGLE_IOS_CLIENT_ID`: the *iOS* client. Also update
-    `ios/Flutter/GoogleSignIn.xcconfig` (client ID and reversed client ID).
+  - `GOOGLE_IOS_CLIENT_ID`: the *iOS* client (bundle ID `com.dayflow.app`).
+    A scheme pre-action (`ios/scripts/dart_defines.sh`) copies it into
+    Info.plist (`GIDClientID` and the reversed-client-ID URL scheme), so the
+    env file is the only place to set it. Stop and re-run `flutter run`
+    after changing it.
   - Android: create an *Android* client for package `com.dayflow.app` with
     the SHA-1 of your debug keystore (`cd android && ./gradlew signingReport`).
 - **Apple**: iOS only. Open `ios/Runner.xcworkspace` in Xcode and pick your
