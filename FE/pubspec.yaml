@@ -1,5 +1,5 @@
 name: mobile_app_demo
-description: "A new Flutter project."
+description: "DayFlow — Smart Daily Planner: alarms, calendar, tasks and mission challenges."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -30,10 +30,43 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.3
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+
+  # HTTP client for calling the Rails API
+  http: ^1.2.0
+
+  # Local storage for persisting the auth token
+  shared_preferences: ^2.2.2
+
+  # Pick images for the avatar
+  image_picker: ^1.0.7
+
+  # Calendar view
+  table_calendar: ^3.1.2
+
+  # Local notifications (alarms & reminders)
+  flutter_local_notifications: ^18.0.0
+  timezone: ^0.9.4
+
+  # Device sensors (accelerometer for shake/walk challenges)
+  sensors_plus: ^6.0.1
+
+  # Real Google Sign-In (ID token + server auth code for Calendar sync)
+  google_sign_in: ^7.2.0
+
+  # Alarm ringtones
+  audioplayers: ^6.8.1
+
+  # QR / barcode mission
+  mobile_scanner: ^7.4.2
+  sign_in_with_apple: ^8.2.0
+  url_launcher: ^6.3.3
 
 dev_dependencies:
   flutter_test:
@@ -56,6 +89,9 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  assets:
+    - assets/sounds/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
