@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DayFlow — Privacy Policy</title>
+<style>
+  body { font: 16px/1.6 -apple-system, system-ui, sans-serif; max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; color: #151827; }
+  h1 { font-size: 28px; } h2 { font-size: 20px; margin-top: 32px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; } td, th { border: 1px solid #e2e4ee; padding: 8px; text-align: left; vertical-align: top; }
+  .muted { color: #6b7085; } a { color: #ff5a3c; }
+</style>
+</head>
+<body>
+<h1>DayFlow — Privacy Policy</h1>
+<p class="muted">Last updated: 29 October 2026 · <a href="#vi">Tiếng Việt</a></p>
+
+<h2>1. Data we collect</h2>
+<table>
+<tr><th>Data</th><th>Purpose</th><th>Stored</th></tr>
+<tr><td>Name, email address</td><td>Account and sign-in</td><td>Our server</td></tr>
+<tr><td>Password</td><td>Sign-in (bcrypt hash only)</td><td>Our server</td></tr>
+<tr><td>Google / Apple account id, email or private relay email</td><td>Sign in with Google / Apple</td><td>Our server</td></tr>
+<tr><td>Google Calendar events (read-only, optional)</td><td>Show your schedule in the app</td><td>Our server; OAuth token encrypted</td></tr>
+<tr><td>Alarms, tasks, personal events, wake-up history</td><td>Core features and wake-up report</td><td>Our server</td></tr>
+<tr><td>Avatar photo (optional), registered QR value</td><td>Profile, QR mission</td><td>Our server</td></tr>
+<tr><td>Theme, language, sign-in token</td><td>Preferences</td><td>Your device only</td></tr>
+</table>
+<p>Camera images (QR mission) and motion-sensor readings (shake / walk missions) are processed on the device and never stored or uploaded.
+We do not collect location, contacts or advertising identifiers, do not track you, do not use advertising or analytics SDKs, and do not sell or share your data.</p>
+
+<h2>2. Google user data</h2>
+<p>If you connect Google Calendar we request the read-only scope <code>calendar.readonly</code>, used only to display your events inside DayFlow.
+DayFlow's use of information received from Google APIs adheres to the
+<a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, including the Limited Use requirements.
+Disconnect any time in Settings → Google Calendar; imported events are deleted and the token is revoked.</p>
+
+<h2>3. Retention and deletion</h2>
+<p>Data is kept while your account exists. Settings → Delete account permanently deletes your account and all data immediately and revokes Google / Apple tokens.</p>
+
+<h2>4. Security</h2>
+<p>All traffic uses HTTPS. Passwords are hashed with bcrypt and OAuth tokens are encrypted at rest.</p>
+
+<h2>5. Children</h2>
+<p>DayFlow is not directed to children under 13.</p>
+
+<h2>6. Contact</h2>
+<p><a href="mailto:support@dayflow.app">support@dayflow.app</a></p>
+
+<h2 id="vi">Chính sách quyền riêng tư (Tiếng Việt)</h2>
+<p>DayFlow thu thập tên, email, mật khẩu (chỉ lưu dạng băm bcrypt), định danh tài khoản Google/Apple, báo thức, công việc, sự kiện, lịch sử thức dậy và (nếu bạn kết nối) sự kiện Google Calendar ở chế độ chỉ đọc để hiển thị lịch trình trong ứng dụng.
+Hình ảnh camera (nhiệm vụ QR) và dữ liệu cảm biến chuyển động (nhiệm vụ lắc/đi bộ) chỉ xử lý trên thiết bị, không lưu và không gửi lên máy chủ.
+Chúng tôi không thu thập vị trí, danh bạ, mã quảng cáo; không theo dõi, không bán hay chia sẻ dữ liệu.
+Bạn có thể ngắt kết nối Google Calendar hoặc xoá vĩnh viễn tài khoản cùng toàn bộ dữ liệu trong Cài đặt. Liên hệ: support@dayflow.app.</p>
+</body>
+</html>
