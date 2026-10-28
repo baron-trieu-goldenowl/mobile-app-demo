@@ -60,3 +60,30 @@ Rails/UnknownEnv:
     - production
     - development
     - test
+
+# Teach rubocop-rspec the rswag DSL used in spec/integration.
+RSpec:
+  Language:
+    ExampleGroups:
+      Regular:
+        - path
+        - get
+        - post
+        - put
+        - patch
+        - delete
+        - response
+    Examples:
+      Regular:
+        - run_test!
+
+RSpec/VariableName:
+  AllowedPatterns:
+    - ^Authorization$
+
+RSpec/DescribeClass:
+  inherit_mode:
+    merge:
+      - Exclude
+  Exclude:
+    - spec/integration/**/*
