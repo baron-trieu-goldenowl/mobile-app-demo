@@ -1,0 +1,1062 @@
+---
+openapi: 3.0.3
+info:
+  title: DayFlow API
+  version: v1
+  description: 'Backend for the DayFlow alarm & daily planner app. Authenticate with
+    POST /api/v1/auth/login (or Google / Apple), then send `Authorization: Bearer
+    <token>`.'
+servers:
+- url: "{baseUrl}"
+  variables:
+    baseUrl:
+      default: http://localhost:3000
+tags:
+- name: Auth
+- name: Profile
+- name: Alarms
+- name: Tasks
+- name: Calendar
+- name: Wake logs
+- name: Notifications
+components:
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        details:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      required:
+      - error
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+          nullable: true
+        name:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        providers:
+          type: array
+          items:
+            type: string
+            enum:
+            - google
+            - apple
+        avatar_url:
+          type: string
+          nullable: true
+        google_connected:
+          type: boolean
+        google_calendar_synced_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - id
+      - providers
+      - google_connected
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          "$ref": "#/components/schemas/User"
+      required:
+      - token
+      - user
+    Alarm:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        time:
+          type: string
+          example: '06:30'
+          pattern: "^([01]\\d|2[0-3]):[0-5]\\d$"
+        repeat_days:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+            maximum: 7
+          description: ISO weekdays, 1 = Monday. Empty = rings once.
+        enabled:
+          type: boolean
+        sound:
+          type: string
+          enum:
+          - classic
+          - digital
+          - chime
+          - rising
+          - birds
+        volume:
+          type: integer
+          minimum: 0
+          maximum: 100
+        gradual_volume:
+          type: boolean
+        vibration:
+          type: boolean
+        snooze_minutes:
+          type: integer
+          minimum: 0
+          maximum: 60
+          description: 0 disables snooze
+        snooze_limit:
+          type: integer
+          minimum: 0
+          maximum: 10
+          description: 0 = unlimited
+        wake_up_check:
+          type: boolean
+        challenge_type:
+          type: string
+          enum:
+          - none
+          - math
+          - memory
+          - typing
+          - shake
+          - walk
+          - puzzle
+          - qr
+        challenge_difficulty:
+          type: string
+          enum:
+          - easy
+          - medium
+          - hard
+        qr_code:
+          type: string
+          nullable: true
+          description: Required when challenge_type is qr
+      required:
+      - id
+      - title
+      - time
+      - repeat_days
+      - enabled
+    AlarmInput:
+      type: object
+      properties:
+        alarm:
+          type: object
+          properties:
+            title:
+              type: string
+            time:
+              type: string
+              example: '06:30'
+            repeat_days:
+              type: array
+              items:
+                type: integer
+            enabled:
+              type: boolean
+            sound:
+              type: string
+            volume:
+              type: integer
+            gradual_volume:
+              type: boolean
+            vibration:
+              type: boolean
+            snooze_minutes:
+              type: integer
+            snooze_limit:
+              type: integer
+            wake_up_check:
+              type: boolean
+            challenge_type:
+              type: string
+            challenge_difficulty:
+              type: string
+            qr_code:
+              type: string
+      required:
+      - alarm
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        priority:
+          type: string
+          enum:
+          - low
+          - medium
+          - high
+          - urgent
+        status:
+          type: string
+          enum:
+          - todo
+          - in_progress
+          - done
+        due_at:
+          type: string
+          format: date-time
+          nullable: true
+        reminder_at:
+          type: string
+          format: date-time
+          nullable: true
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - title
+      - priority
+      - status
+    TaskInput:
+      type: object
+      properties:
+        task:
+          type: object
+          properties:
+            title:
+              type: string
+            description:
+              type: string
+            priority:
+              type: string
+            status:
+              type: string
+            due_at:
+              type: string
+              format: date-time
+            reminder_at:
+              type: string
+              format: date-time
+      required:
+      - task
+    CalendarEvent:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        location:
+          type: string
+          nullable: true
+        start_at:
+          type: string
+          format: date-time
+        end_at:
+          type: string
+          format: date-time
+          nullable: true
+        all_day:
+          type: boolean
+        source:
+          type: string
+          enum:
+          - local
+          - google_calendar
+      required:
+      - id
+      - title
+      - start_at
+      - source
+    CalendarEventInput:
+      type: object
+      properties:
+        calendar_event:
+          type: object
+          properties:
+            title:
+              type: string
+            description:
+              type: string
+            location:
+              type: string
+            start_at:
+              type: string
+              format: date-time
+            end_at:
+              type: string
+              format: date-time
+            all_day:
+              type: boolean
+      required:
+      - calendar_event
+    WakeLog:
+      type: object
+      properties:
+        id:
+          type: integer
+        alarm_id:
+          type: integer
+          nullable: true
+        alarm_title:
+          type: string
+          nullable: true
+        scheduled_at:
+          type: string
+          format: date-time
+          nullable: true
+        dismissed_at:
+          type: string
+          format: date-time
+        snooze_count:
+          type: integer
+        challenge_type:
+          type: string
+          nullable: true
+        mission_seconds:
+          type: integer
+          nullable: true
+      required:
+      - id
+      - dismissed_at
+      - snooze_count
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        body:
+          type: string
+          nullable: true
+        read:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - title
+      - read
+paths:
+  "/api/v1/alarms":
+    get:
+      summary: List alarms (ordered by time)
+      tags:
+      - Alarms
+      security:
+      - bearer: []
+      responses:
+        '200':
+          description: alarms
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alarms:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/Alarm"
+                required:
+                - alarms
+    post:
+      summary: Create an alarm
+      tags:
+      - Alarms
+      security:
+      - bearer: []
+      parameters: []
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alarm:
+                    "$ref": "#/components/schemas/Alarm"
+                required:
+                - alarm
+        '422':
+          description: invalid alarm
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/AlarmInput"
+  "/api/v1/alarms/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    patch:
+      summary: Update an alarm (e.g. toggle `enabled`)
+      tags:
+      - Alarms
+      security:
+      - bearer: []
+      parameters: []
+      responses:
+        '200':
+          description: updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alarm:
+                    "$ref": "#/components/schemas/Alarm"
+                required:
+                - alarm
+        '404':
+          description: not found (or another user's alarm)
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/AlarmInput"
+    delete:
+      summary: Delete an alarm
+      tags:
+      - Alarms
+      security:
+      - bearer: []
+      responses:
+        '204':
+          description: deleted
+  "/api/v1/auth/signup":
+    post:
+      summary: Create an account with email and password
+      tags:
+      - Auth
+      parameters: []
+      responses:
+        '201':
+          description: account created
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AuthResponse"
+        '422':
+          description: invalid data
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: me@example.com
+                password:
+                  type: string
+                  example: Password1
+                  description: 8+ chars, upper, lower and digit
+                name:
+                  type: string
+                  example: Minh An
+              required:
+              - email
+              - password
+  "/api/v1/auth/login":
+    post:
+      summary: Log in with email and password
+      tags:
+      - Auth
+      parameters: []
+      responses:
+        '200':
+          description: logged in
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AuthResponse"
+        '401':
+          description: wrong credentials
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+              - email
+              - password
+  "/api/v1/auth/google":
+    post:
+      summary: Sign in with Google
+      tags:
+      - Auth
+      description: Verifies the Google ID token. When `server_auth_code` is sent (Calendar
+        scope granted), the refresh token is stored and the Google Calendar is imported.
+      parameters: []
+      responses:
+        '200':
+          description: signed in
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AuthResponse"
+        '401':
+          description: invalid Google token
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_token:
+                  type: string
+                server_auth_code:
+                  type: string
+                  nullable: true
+              required:
+              - id_token
+  "/api/v1/auth/apple":
+    post:
+      summary: Sign in with Apple
+      tags:
+      - Auth
+      description: Verifies the Apple identity token against Apple's public keys.
+        `name` is only provided by Apple on the first sign-in.
+      parameters: []
+      responses:
+        '200':
+          description: signed in
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AuthResponse"
+        '401':
+          description: invalid Apple token
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                identity_token:
+                  type: string
+                authorization_code:
+                  type: string
+                  nullable: true
+                name:
+                  type: string
+                  nullable: true
+              required:
+              - identity_token
+  "/api/v1/calendar_events":
+    get:
+      summary: List events (local + imported Google events)
+      tags:
+      - Calendar
+      security:
+      - bearer: []
+      parameters:
+      - name: from
+        in: query
+        schema:
+          type: string
+          format: date-time
+        required: false
+      - name: to
+        in: query
+        schema:
+          type: string
+          format: date-time
+        required: false
+      responses:
+        '200':
+          description: events
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  calendar_events:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/CalendarEvent"
+                required:
+                - calendar_events
+    post:
+      summary: Create a personal event
+      tags:
+      - Calendar
+      security:
+      - bearer: []
+      parameters: []
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  calendar_event:
+                    "$ref": "#/components/schemas/CalendarEvent"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/CalendarEventInput"
+  "/api/v1/calendar_events/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    patch:
+      summary: Update a personal event (Google events are read-only)
+      tags:
+      - Calendar
+      security:
+      - bearer: []
+      parameters: []
+      responses:
+        '200':
+          description: updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  calendar_event:
+                    "$ref": "#/components/schemas/CalendarEvent"
+        '404':
+          description: Google event or not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/CalendarEventInput"
+    delete:
+      summary: Delete a personal event
+      tags:
+      - Calendar
+      security:
+      - bearer: []
+      responses:
+        '204':
+          description: deleted
+  "/api/v1/calendar_sync":
+    post:
+      summary: Import the user's Google Calendar now
+      tags:
+      - Calendar
+      security:
+      - bearer: []
+      responses:
+        '422':
+          description: Google Calendar not connected
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+  "/api/v1/google_connection":
+    post:
+      summary: Link Google Calendar to the current account
+      tags:
+      - Calendar
+      description: Exchanges a server auth code from the Google SDK, stores the refresh
+        token and imports events.
+      security:
+      - bearer: []
+      parameters: []
+      responses:
+        '200':
+          description: connected
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  imported:
+                    type: integer
+                  user:
+                    "$ref": "#/components/schemas/User"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                server_auth_code:
+                  type: string
+              required:
+              - server_auth_code
+    delete:
+      summary: Unlink Google Calendar (removes imported events, revokes the token)
+      tags:
+      - Calendar
+      security:
+      - bearer: []
+      responses:
+        '200':
+          description: disconnected
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    "$ref": "#/components/schemas/User"
+  "/api/v1/notifications":
+    get:
+      summary: Latest 100 notifications
+      tags:
+      - Notifications
+      security:
+      - bearer: []
+      responses:
+        '200':
+          description: notifications
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  notifications:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/Notification"
+                required:
+                - notifications
+  "/api/v1/notifications/{id}/read":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    patch:
+      summary: Mark one notification as read
+      tags:
+      - Notifications
+      security:
+      - bearer: []
+      responses:
+        '200':
+          description: marked as read
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  notification:
+                    "$ref": "#/components/schemas/Notification"
+  "/api/v1/notifications/read_all":
+    patch:
+      summary: Mark all notifications as read
+      tags:
+      - Notifications
+      security:
+      - bearer: []
+      responses:
+        '204':
+          description: done
+  "/api/v1/profile":
+    get:
+      summary: Current user
+      tags:
+      - Profile
+      security:
+      - bearer: []
+      responses:
+        '200':
+          description: profile
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    "$ref": "#/components/schemas/User"
+                required:
+                - user
+        '401':
+          description: missing or invalid token
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+    patch:
+      summary: Update name / email (send multipart/form-data with `avatar` to change
+        the photo)
+      tags:
+      - Profile
+      security:
+      - bearer: []
+      parameters: []
+      responses:
+        '200':
+          description: updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    "$ref": "#/components/schemas/User"
+                required:
+                - user
+        '422':
+          description: invalid email
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+  "/api/v1/account":
+    delete:
+      summary: Permanently delete the account and all data
+      tags:
+      - Profile
+      description: Revokes Google / Apple tokens, then deletes the user (App Store
+        Guideline 5.1.1(v)).
+      security:
+      - bearer: []
+      responses:
+        '204':
+          description: deleted
+  "/api/v1/tasks":
+    get:
+      summary: List tasks
+      tags:
+      - Tasks
+      security:
+      - bearer: []
+      responses:
+        '200':
+          description: tasks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tasks:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/Task"
+                required:
+                - tasks
+    post:
+      summary: Create a task
+      tags:
+      - Tasks
+      security:
+      - bearer: []
+      parameters: []
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  task:
+                    "$ref": "#/components/schemas/Task"
+                required:
+                - task
+        '422':
+          description: invalid task
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/TaskInput"
+  "/api/v1/tasks/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    patch:
+      summary: Update a task (status `done` sets completed_at)
+      tags:
+      - Tasks
+      security:
+      - bearer: []
+      parameters: []
+      responses:
+        '200':
+          description: updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  task:
+                    "$ref": "#/components/schemas/Task"
+                required:
+                - task
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/TaskInput"
+    delete:
+      summary: Delete a task
+      tags:
+      - Tasks
+      security:
+      - bearer: []
+      responses:
+        '204':
+          description: deleted
+  "/api/v1/wake_logs":
+    get:
+      summary: Wake-up history
+      tags:
+      - Wake logs
+      security:
+      - bearer: []
+      parameters:
+      - name: days
+        in: query
+        schema:
+          type: integer
+          default: 30
+          minimum: 1
+          maximum: 365
+        required: false
+      responses:
+        '200':
+          description: history, newest first
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  wake_logs:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/WakeLog"
+                required:
+                - wake_logs
+    post:
+      summary: Record a dismissed alarm
+      tags:
+      - Wake logs
+      security:
+      - bearer: []
+      parameters: []
+      responses:
+        '201':
+          description: recorded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  wake_log:
+                    "$ref": "#/components/schemas/WakeLog"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                wake_log:
+                  type: object
+                  properties:
+                    alarm_id:
+                      type: integer
+                    alarm_title:
+                      type: string
+                    scheduled_at:
+                      type: string
+                      format: date-time
+                    dismissed_at:
+                      type: string
+                      format: date-time
+                    snooze_count:
+                      type: integer
+                    challenge_type:
+                      type: string
+                    mission_seconds:
+                      type: integer
+                  required:
+                  - dismissed_at
+              required:
+              - wake_log

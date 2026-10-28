@@ -45,7 +45,7 @@ class ApiClient {
   }
 
   /// All endpoints are versioned under this prefix.
-  static const apiPrefix = '/v1';
+  static const apiPrefix = '/api/v1';
 
   /// Public pages served by the backend (linked from the app and the stores).
   static String get privacyPolicyUrl => '$baseUrl/privacy.html';
