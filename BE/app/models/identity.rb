@@ -1,0 +1,11 @@
+# A Google or Apple account used to sign in.
+class Identity < ApplicationRecord
+  PROVIDERS = %w[google apple].freeze
+
+  belongs_to :user
+
+  encrypts :refresh_token
+
+  validates :provider, inclusion: { in: PROVIDERS }
+  validates :uid, presence: true, uniqueness: { scope: :provider }
+end

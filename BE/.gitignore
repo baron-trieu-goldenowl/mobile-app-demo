@@ -1,0 +1,25 @@
+# Bundler
+/.bundle
+/vendor/bundle
+
+# Environment / secrets
+/.env*
+!/.env.example
+/config/master.key
+/config/credentials/*.key
+
+# Logs, temp files, uploads
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+/tmp/pids/*
+!/tmp/pids/.keep
+/storage/*
+!/storage/.keep
+/public/assets
+/node_modules
+
+# Test artifacts
+/coverage
+/spec/examples.txt
