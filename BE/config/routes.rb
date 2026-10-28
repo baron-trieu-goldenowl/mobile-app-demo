@@ -1,6 +1,13 @@
 Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
+  # Swagger UI + OpenAPI file (swagger/v1/swagger.yaml). Always on outside
+  # production; in production only when ENABLE_API_DOCS=true.
+  if !Rails.env.production? || ENV["ENABLE_API_DOCS"] == "true"
+    mount Rswag::Ui::Engine => "/api-docs"
+    mount Rswag::Api::Engine => "/api-docs"
+  end
+
   namespace :api, defaults: { format: :json } do
     namespace :v1 do
       namespace :auth do
