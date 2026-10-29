@@ -19,6 +19,12 @@ class AppShell extends StatefulWidget {
   /// Currently visible tab; screens listen to it to refresh when shown.
   static final currentTab = ValueNotifier<int>(0);
 
+  static const alarmTab = 0;
+  static const scheduleTab = 1;
+  static const tasksTab = 2;
+  static const reportTab = 3;
+  static const settingsTab = 4;
+
   @override
   State<AppShell> createState() => _AppShellState();
 }

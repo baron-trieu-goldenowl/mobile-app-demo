@@ -8,6 +8,7 @@ import '../models/alarm.dart';
 import '../models/mission.dart';
 import '../services/alarm_scheduler.dart';
 import '../services/alarm_service.dart';
+import '../services/inbox_service.dart';
 import '../services/notification_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_shell.dart';
@@ -61,6 +62,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
   Future<void> _load({bool silent = false}) async {
     if (!silent) setState(() => _loading = true);
+    unawaited(InboxService.instance.refreshUnread());
     try {
       final alarms = await _service.getAlarms();
       alarms.sort((a, b) => a.time.compareTo(b.time));
@@ -184,11 +186,18 @@ class _AlarmScreenState extends State<AlarmScreen> {
                         icon: const Icon(Icons.bolt_rounded),
                         onPressed: _quickAlarm,
                       ),
-                      IconButton(
-                        tooltip: s.notifications,
-                        icon: const Icon(Icons.notifications_none_rounded),
-                        onPressed: () =>
-                            Navigator.of(context).pushNamed('/notifications'),
+                      ValueListenableBuilder<int>(
+                        valueListenable: InboxService.instance.unreadCount,
+                        builder: (context, unread, _) => IconButton(
+                          tooltip: s.notifications,
+                          icon: Badge(
+                            isLabelVisible: unread > 0,
+                            label: Text(unread > 9 ? '9+' : '$unread'),
+                            child: const Icon(Icons.notifications_none_rounded),
+                          ),
+                          onPressed: () =>
+                              Navigator.of(context).pushNamed('/notifications'),
+                        ),
                       ),
                     ],
                   ),

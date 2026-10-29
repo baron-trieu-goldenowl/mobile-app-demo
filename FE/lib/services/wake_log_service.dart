@@ -13,6 +13,13 @@ class WakeLogService {
   }
 
   Future<void> create(WakeLog log) async {
-    await _api.post('/wake_logs', body: {'wake_log': log.toJson()});
+    await _api.post(
+      '/wake_logs',
+      body: {
+        'wake_log': log.toJson(),
+        // Lets the backend count streak days in the device's time zone.
+        'utc_offset': DateTime.now().timeZoneOffset.inSeconds,
+      },
+    );
   }
 }

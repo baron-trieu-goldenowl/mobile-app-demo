@@ -5,6 +5,7 @@ import '../models/user.dart';
 import 'api_client.dart';
 import 'apple_auth_service.dart';
 import 'google_auth_service.dart';
+import 'inbox_service.dart';
 import 'notification_service.dart';
 
 class AuthService extends ChangeNotifier {
@@ -110,6 +111,7 @@ class AuthService extends ChangeNotifier {
   Future<void> logout() async {
     _api.setToken(null);
     _currentUser = null;
+    InboxService.instance.reset();
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_tokenKey);

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_app_demo/l10n/app_strings.dart';
 import 'package:mobile_app_demo/models/alarm.dart';
+import 'package:mobile_app_demo/models/notification.dart';
 import 'package:mobile_app_demo/screens/challenge_screen.dart';
 import 'package:mobile_app_demo/screens/login_screen.dart';
 import 'package:mobile_app_demo/services/api_client.dart';
@@ -83,5 +84,37 @@ void main() {
 
   test('API calls target the versioned backend routes', () {
     expect(ApiClient.apiPrefix, '/api/v1');
+  });
+
+  group('Notification text', () {
+    AppNotification notification(String kind, Map<String, dynamic> data) =>
+        AppNotification.fromJson({
+          'id': 1,
+          'kind': kind,
+          'data': data,
+          'title': 'Server title',
+          'body': 'Server body',
+          'read': false,
+          'created_at': '2026-10-29T06:00:00Z',
+        });
+
+    test('known kinds are localized from their data', () {
+      final vi = AppStrings(const Locale('vi'));
+      final en = AppStrings(const Locale('en'));
+      final streak = notification('wake_streak', {'days': 7});
+      final synced = notification('calendar_synced', {'count': 12});
+
+      expect(vi.notificationTitle(streak), 'Chuỗi 7 ngày dậy đúng giờ!');
+      expect(en.notificationBody(synced), contains('Imported 12'));
+    });
+
+    test('unknown kinds fall back to the server text', () {
+      final n = notification('general', {});
+
+      expect(
+        AppStrings(const Locale('vi')).notificationTitle(n),
+        'Server title',
+      );
+    });
   });
 }

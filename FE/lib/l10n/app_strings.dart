@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
 
+import '../models/notification.dart';
+
 /// Simple app-wide string translations (vi/en).
 class AppStrings {
   AppStrings(this.locale);
@@ -293,6 +295,34 @@ class AppStrings {
   String confirmWithin(String time) => isVi
       ? 'Xác nhận trong $time, nếu không báo thức sẽ reo lại'
       : 'Confirm within $time or the alarm rings again';
+
+  String notificationTitle(AppNotification n) => switch (n.kind) {
+    'calendar_synced' =>
+      isVi ? 'Đã đồng bộ Google Calendar' : 'Google Calendar synced',
+    'calendar_sync_failed' =>
+      isVi ? 'Đồng bộ Google Calendar thất bại' : 'Google Calendar sync failed',
+    'wake_streak' =>
+      isVi
+          ? 'Chuỗi ${n.dataInt('days')} ngày dậy đúng giờ!'
+          : '${n.dataInt('days')}-day wake-up streak!',
+    _ => n.title,
+  };
+
+  String notificationBody(AppNotification n) => switch (n.kind) {
+    'calendar_synced' =>
+      isVi
+          ? 'Đã nhập ${n.dataInt('count')} sự kiện mới hoặc được cập nhật.'
+          : 'Imported ${n.dataInt('count')} new or updated events.',
+    'calendar_sync_failed' =>
+      isVi
+          ? 'Không cập nhật được sự kiện Google. Hãy kết nối lại Google Calendar trong Cài đặt.'
+          : "We couldn't update your Google events. Reconnect Google Calendar in Settings.",
+    'wake_streak' =>
+      isVi
+          ? 'Bạn đã dậy cùng DayFlow ${n.dataInt('days')} ngày liên tiếp. Tiếp tục nhé!'
+          : "You've woken up with DayFlow ${n.dataInt('days')} days in a row. Keep it going!",
+    _ => n.body,
+  };
 
   String streakDays(int n) => isVi ? 'Chuỗi $n ngày' : '$n-day streak';
 
