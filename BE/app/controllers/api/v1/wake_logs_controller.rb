@@ -11,9 +11,10 @@ module Api
         render json: WakeLogBlueprint.render(logs, root: :wake_logs)
       end
 
-      # POST /api/v1/wake_logs
+      # POST /api/v1/wake_logs  body: { wake_log: {...}, utc_offset: seconds }
       def create
         log = current_user.wake_logs.create!(wake_log_params)
+        WakeLogs::StreakMilestone.call(log, utc_offset: params[:utc_offset])
         render json: WakeLogBlueprint.render(log, root: :wake_log), status: :created
       end
 

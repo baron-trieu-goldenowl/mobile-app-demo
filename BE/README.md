@@ -145,7 +145,7 @@ Errors always look like `{ "error": "...", "details": { "field": ["..."] } }`.
 | POST | `/calendar_sync` | Import Google Calendar |
 | POST / DELETE | `/google_connection` | Link / unlink Google Calendar |
 | GET / POST | `/wake_logs?days=30` | Wake-up history |
-| GET / PATCH | `/notifications`, `/notifications/:id/read`, `/notifications/read_all` | Notifications |
+| GET / PATCH | `/notifications`, `/notifications/:id/read`, `/notifications/read_all` | In-app notifications: Google Calendar sync results (`calendar_synced`, `calendar_sync_failed`) and wake-up streak milestones (`wake_streak`, at 3/7/14/30/60/100/365 days) |
 
 Request/response details: see Swagger UI.
 

@@ -165,10 +165,15 @@ RSpec.configure do |config|
           Notification: {
             type: :object,
             properties: {
-              id: { type: :integer }, title: { type: :string }, body: { type: :string, nullable: true },
-              read: { type: :boolean }, created_at: timestamp
+              id: { type: :integer },
+              kind: { type: :string, enum: Notification::KINDS,
+                      description: "The app shows known kinds in the user's language using `data`" },
+              data: { type: :object, example: { count: 12 },
+                      description: "calendar_synced: { count }, wake_streak: { days }" },
+              title: { type: :string, description: "English fallback text" },
+              body: { type: :string, nullable: true }, read: { type: :boolean }, created_at: timestamp
             },
-            required: %w[id title read]
+            required: %w[id kind data title read]
           }
         }
       }

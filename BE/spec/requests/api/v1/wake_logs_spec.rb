@@ -20,4 +20,17 @@ RSpec.describe "Wake logs" do
 
     expect(response).to have_http_status(:unprocessable_content)
   end
+
+  it "notifies a wake-up streak milestone" do
+    2.downto(1) { |n| create_log(n.days.ago) }
+
+    post "/api/v1/wake_logs", params: { wake_log: { dismissed_at: Time.current }, utc_offset: 0 },
+                              headers: auth_headers(user), as: :json
+
+    expect(user.notifications.last).to have_attributes(kind: "wake_streak", data: { "days" => 3 })
+  end
+
+  def create_log(time)
+    user.wake_logs.create!(dismissed_at: time, snooze_count: 0)
+  end
 end

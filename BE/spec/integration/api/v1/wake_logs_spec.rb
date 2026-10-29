@@ -41,7 +41,9 @@ RSpec.describe "Wake logs API" do
               snooze_count: { type: :integer }, challenge_type: { type: :string }, mission_seconds: { type: :integer }
             },
             required: ["dismissed_at"]
-          }
+          },
+          utc_offset: { type: :integer, example: 25_200,
+                        description: "Device UTC offset in seconds, used to count wake-up streak days" }
         },
         required: ["wake_log"]
       }

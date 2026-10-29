@@ -351,8 +351,22 @@ components:
       properties:
         id:
           type: integer
+        kind:
+          type: string
+          enum:
+          - general
+          - calendar_synced
+          - calendar_sync_failed
+          - wake_streak
+          description: The app shows known kinds in the user's language using `data`
+        data:
+          type: object
+          example:
+            count: 12
+          description: 'calendar_synced: { count }, wake_streak: { days }'
         title:
           type: string
+          description: English fallback text
         body:
           type: string
           nullable: true
@@ -363,6 +377,8 @@ components:
           format: date-time
       required:
       - id
+      - kind
+      - data
       - title
       - read
 paths:
@@ -1058,5 +1074,10 @@ paths:
                       type: integer
                   required:
                   - dismissed_at
+                utc_offset:
+                  type: integer
+                  example: 25200
+                  description: Device UTC offset in seconds, used to count wake-up
+                    streak days
               required:
               - wake_log

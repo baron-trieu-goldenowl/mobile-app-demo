@@ -8,6 +8,7 @@ module Google
     PAST_WINDOW = 30.days
     FUTURE_WINDOW = 120.days
     MAX_PAGES = 10
+    FAILURE_NOTICE_INTERVAL = 1.day
 
     def initialize(user)
       super()
@@ -27,10 +28,25 @@ module Google
       end
 
       @user.update!(google_calendar_synced_at: Time.current)
+      notify_synced(changed)
       changed
+    rescue Error
+      notify_failed
+      raise
     end
 
     private
+
+    def notify_synced(changed)
+      Notifications::Deliver.call(@user, :calendar_synced, count: changed) if changed.positive?
+    end
+
+    # Once a day at most: the app retries the sync on every refresh.
+    def notify_failed
+      return unless @user.google_connected?
+
+      Notifications::Deliver.call(@user, :calendar_sync_failed, dedupe_for: FAILURE_NOTICE_INTERVAL)
+    end
 
     # Returns [google ids kept, number of created / updated events].
     def upsert_events(items)

@@ -33,4 +33,16 @@ if reviewer.calendar_events.none?
   reviewer.calendar_events.create!(title: "Team standup", start_at: start, end_at: start + 15.minutes)
 end
 
+if reviewer.wake_logs.none?
+  wake_up = reviewer.alarms.find_by(title: "Wake up")
+  3.downto(1) do |days_ago|
+    scheduled = days_ago.days.ago.change(hour: 6, min: 30)
+    reviewer.wake_logs.create!(alarm: wake_up, alarm_title: "Wake up", scheduled_at: scheduled,
+                               dismissed_at: scheduled + 4.minutes, snooze_count: days_ago == 2 ? 1 : 0,
+                               challenge_type: "math", mission_seconds: 35)
+  end
+end
+
+Notifications::Deliver.call(reviewer, :wake_streak, days: 3) if reviewer.notifications.none?
+
 Rails.logger.info("Seeded review account #{email}")
