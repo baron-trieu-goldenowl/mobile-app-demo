@@ -410,7 +410,11 @@ class _MemoryChallengeState extends State<_MemoryChallenge> {
   @override
   void initState() {
     super.initState();
-    _newRound();
+    // _newRound reports progress to the parent (setState), which is not
+    // allowed while this widget is being built.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) unawaited(_newRound());
+    });
   }
 
   Future<void> _newRound() async {

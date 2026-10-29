@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_app_demo/l10n/app_strings.dart';
 import 'package:mobile_app_demo/models/alarm.dart';
+import 'package:mobile_app_demo/screens/challenge_screen.dart';
 import 'package:mobile_app_demo/screens/login_screen.dart';
 import 'package:mobile_app_demo/services/api_client.dart';
 import 'package:mobile_app_demo/theme/app_theme.dart';
@@ -19,6 +20,27 @@ void main() {
     expect(find.text('Password'), findsOneWidget);
     expect(find.text('Log in'), findsOneWidget);
     expect(find.textContaining('Facebook'), findsNothing);
+  });
+
+  testWidgets('Memory mission starts without setState-during-build', (
+    tester,
+  ) async {
+    const alarm = Alarm(
+      id: 1,
+      title: 'a',
+      time: '06:30',
+      challengeType: 'memory',
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.dark(),
+        home: const ChallengeScreen(alarm: alarm),
+      ),
+    );
+    // Let the tile sequence play through.
+    await tester.pump(const Duration(seconds: 10));
+
+    expect(tester.takeException(), isNull);
   });
 
   group('Alarm.nextTrigger', () {
